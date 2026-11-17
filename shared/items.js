@@ -29,7 +29,7 @@ const it = (cat, id, name, price, rarity = 'common', data = {}) => ({ id, cat, n
 export const COSMETICS = [
   // ── OUTFITS (full-body skins; override top/bottom/skin look) ──
   it('outfit', 'outfit_none', 'NO OUTFIT', 0),
-  it('outfit', 'outfit_ninja', 'CYBER NINJA', 1800, 'epic', { body: '#15161c', trim: '#ff2f6d', skin: '#15161c', glow: true }),
+  it('outfit', 'outfit_ninja', 'CYBER NINJA', 1800, 'epic', { body: '#15161c', trim: '#ff2f6d', skin: '#15161c', glow: true, ninja: true }),
   it('outfit', 'outfit_mecha', 'MECHA UNIT', 2400, 'legendary', { body: '#d8dde6', trim: '#ff8a1f', skin: '#9aa3b1', robot: true, glow: true }),
   it('outfit', 'outfit_ghost', 'NEON GHOST', 2200, 'legendary', { body: '#1ad8ff', trim: '#ffffff', skin: '#1ad8ff', ghost: true, glow: true }),
   it('outfit', 'outfit_gold', 'GOLDEN LEGEND', 3000, 'legendary', { body: '#f5c040', trim: '#fff2b0', skin: '#f5c040', metal: true }),

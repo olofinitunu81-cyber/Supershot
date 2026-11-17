@@ -229,6 +229,13 @@ export class MapBuilder {
       }
     }
     if (o.floor !== false) this.box(x, y, z, w - 2 * t, 0.06, d - 2 * t, o.floorMat ?? 'interior', { noShadow: true });
+    if (o.roof !== false && o.lights !== false) {
+      // interior ceiling lighting
+      const lw = Math.max(1, (w - 2 * t) * 0.6), ld = Math.max(0.5, Math.min(1.2, (d - 2 * t) * 0.18));
+      const zs = d > 10 ? [z - d * 0.25, z + d * 0.25] : [z];
+      for (const lz of zs) this.deco('ceilinglight', x, y + h - 0.04, lz, { w: lw, d: ld });
+      this.light(x, y + h - 0.7, z, o.lightColor || '#ffe9c8', 1.6, Math.max(w, d) * 0.9);
+    }
     return this;
   }
 

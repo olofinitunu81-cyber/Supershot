@@ -12,7 +12,7 @@ export function buildDunes() {
       preset: 'day',
       sky: { top: '#2f7fd6', mid: '#8cc4ef', horizon: '#f6e3c2', bottom: '#d9b98c', stars: 0, sunDir: [-0.4, 0.75, 0.5], sunColor: '#fff4d6', sunSize: 1.2 },
       fog: { color: '#e8d2ad', near: 70, far: 260 },
-      hemi: { sky: '#bfe0ff', ground: '#b88a52', intensity: 1.0 },
+      hemi: { sky: '#d6e4f0', ground: '#c09060', intensity: 0.85 },
       sun: { color: '#fff1d6', intensity: 3.0, dir: [0.42, -0.78, -0.46] },
       exposure: 0.92,
       dust: true,

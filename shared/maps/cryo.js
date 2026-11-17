@@ -14,7 +14,7 @@ export function buildCryo() {
       fog: { color: '#cbd8e6', near: 35, far: 170 },
       hemi: { sky: '#dfeaff', ground: '#7d8ea8', intensity: 1.0 },
       sun: { color: '#ffe9d1', intensity: 2.0, dir: [0.6, -0.42, 0.68] },
-      exposure: 0.95,
+      exposure: 0.85,
       snow: true,
       mats: {
         floor: { tex: 'snow', color: '#eef3f8', rough: 0.9 },
@@ -30,7 +30,7 @@ export function buildCryo() {
         container: { tex: 'container', color: '#2f6fb3', rough: 0.55, metal: 0.5 },
         barrier: { tex: 'concrete', color: '#c2cad4', rough: 0.9, stripe: '#ff5a3a' },
         ice: { tex: 'ice', color: '#a8dcff', rough: 0.1, metal: 0.1, transparent: 0.82 },
-        snowbank: { tex: 'snow', color: '#f4f8fc', rough: 0.95 },
+        snowbank: { tex: 'snow', color: '#dfe7f0', rough: 0.95 },
         rail: { tex: 'metal', color: '#ffb321', rough: 0.4, metal: 0.6 },
         padbase: { tex: 'metal', color: '#2a2d38', rough: 0.4, metal: 0.8 },
       },
@@ -88,9 +88,9 @@ export function buildCryo() {
     b.box(-24, 0, -36, 3, 3.5, 3, 'metal');
 
     // ── west yard ──
-    b.box(-24, 0, -24, 2.4, 3.2, 2.4, 'metal');
+    b.box(-24, 0, -24, 2.5, 3.2, 2.5, 'clip', { hidden: true, bullet: true });
     b.deco('fueltank', -24, 0, -24, {});
-    b.box(-27.5, 0, -18, 2.4, 3.2, 2.4, 'metal');
+    b.box(-27.5, 0, -18, 2.5, 3.2, 2.5, 'clip', { hidden: true, bullet: true });
     b.deco('fueltank', -27.5, 0, -18, {});
     b.crate(-20, 0, -10, 1.3);
     b.crate(-19, 0, -11.2, 1.0);

@@ -10,10 +10,14 @@ import { DEG, TAU, clamp, lerp } from './math.js';
 
 export const SLOT_NAMES = ['primary', 'secondary', 'melee'];
 
+export function seedBaseFor(id) {
+  return hashInts(id * 7919 + 13);
+}
+
 export function createPlayerState(id, loadout) {
   const p = {
     id,
-    seedBase: hashInts(id * 7919 + 13),
+    seedBase: seedBaseFor(id),
     x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0,
     yaw: 0, pitch: 0,
     onGround: false, crouched: false, sliding: false, sprinting: false,
