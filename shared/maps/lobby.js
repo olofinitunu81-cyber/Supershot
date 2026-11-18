@@ -5,8 +5,8 @@ import { MapBuilder } from './dsl.js';
 export const STATIONS = [
   { id: 'play', label: 'DEPLOY', panel: 'play', x: 0, z: -15.5, r: 4.2, cam: { pos: [0, 3.2, -6], look: [0, 3.2, -16] } },
   { id: 'locker', label: 'LOCKER', panel: 'locker', x: -21, z: 0, r: 4, cam: { pos: [-17.3, 1.75, 0.9], look: [-21, 1.2, 0] } },
-  { id: 'armory', label: 'ARMORY', panel: 'armory', x: 21, z: 0, r: 4, cam: { pos: [18.7, 1.85, 0.25], look: [21, 1.55, 0] } },
-  { id: 'shop', label: 'SHOP', panel: 'shop', x: 14, z: 14, r: 3.6, cam: { pos: [9.5, 2.6, 8.5], look: [14, 2.0, 14] } },
+  { id: 'armory', label: 'ARMORY', panel: 'armory', x: 21, z: 0, r: 4, cam: { pos: [17.3, 2.25, 0.75], look: [21, 1.8, 0] } },
+  { id: 'shop', label: 'SHOP', panel: 'shop', x: 14, z: 14, r: 3.6, cam: { pos: [11.2, 2.7, 10.2], look: [14.5, 2.4, 16.5] } },
   { id: 'leaderboard', label: 'LEADERBOARDS', panel: 'leaderboard', x: -14, z: 16.5, r: 4, cam: { pos: [-11, 3.4, 8], look: [-14, 3.6, 18] } },
   { id: 'missions', label: 'DAILY & MISSIONS', panel: 'missions', x: 13, z: -12, r: 3.4, cam: { pos: [9, 2.4, -7.5], look: [13, 1.6, -12] } },
   { id: 'social', label: 'FRIENDS & PARTY', panel: 'friends', x: -13, z: -12, r: 3.4, cam: { pos: [-9, 2.4, -7.5], look: [-13, 1.6, -12] } },
@@ -98,7 +98,7 @@ export function buildLobby() {
   m.deco('car', 22, 0, 13, { color: '#ff2fa6', yaw: 0.6 });
   m.box(22, 0, 13, 3.4, 1.35, 4.8, 'clip', { hidden: true, bullet: true });
   m.deco('ship', -22, 6.5, -14, { color: '#19e6ff', yaw: 0.4 });
-  m.sign(0, 11, -22.4, 16, 2.2, 'SUPERSHOT', '#19e6ff', 0, { glow: 1.3 });
+  m.sign(0, 10.5, 22.4, 16, 2.2, 'SUPERSHOT', '#19e6ff', Math.PI, { glow: 1.3 });
   m.sign(-30.4, 6, 0, 0.2, 1.6, 'LOCKER', '#ff2fa6', Math.PI / 2, { glow: 2.2 });
   m.sign(28, 7, 0, 0.2, 1.6, 'ARMORY', '#ffd27a', -Math.PI / 2, { glow: 2.2 });
   return m.build();

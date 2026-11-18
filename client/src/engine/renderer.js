@@ -100,6 +100,12 @@ export class Engine {
     if (bloomOn) {
       const bp = this.bloomParams || [0.55, 0.45, 0.82];
       const b = new UnrealBloomPass(new THREE.Vector2(this.width / 2, this.height / 2), bp[0], bp[1], bp[2]);
+      // a single NaN/Inf pixel (e.g. an extreme specular highlight overflowing the half-float
+      // target) would be smeared over the whole screen by the blur chain: drop/clamp them first
+      const hp = b.materialHighPassFilter;
+      hp.fragmentShader = hp.fragmentShader.replace('vec4 texel = texture2D( tDiffuse, vUv );',
+        'vec4 texel = texture2D( tDiffuse, vUv ); if (any(isnan(texel)) || any(isinf(texel))) texel = vec4(0.0); texel = clamp(texel, 0.0, 48.0);');
+      hp.needsUpdate = true;
       composer.addPass(b);
       this.bloom = b;
     }

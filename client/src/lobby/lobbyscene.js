@@ -175,12 +175,9 @@ export class LobbyScene {
     const pbase = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.8, 1.0, 32), new THREE.MeshStandardMaterial({ color: '#1d2130', metalness: 0.8, roughness: 0.3 }));
     pbase.position.y = 0.5;
     ped.add(pbase);
-    const pglow = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.05, 32), new THREE.MeshBasicMaterial({ color: new THREE.Color('#ffd27a').multiplyScalar(2.5) }));
+    const pglow = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.05, 32), new THREE.MeshBasicMaterial({ color: new THREE.Color('#ffd27a').multiplyScalar(1.1) }));
     pglow.position.y = 1.0;
     ped.add(pglow);
-    const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 2.2, 32, 1, true), new THREE.MeshBasicMaterial({ color: new THREE.Color('#ffd27a').multiplyScalar(0.22), transparent: true, opacity: 0.14, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
-    beam.position.y = 2.1;
-    ped.add(beam);
     const holder = new THREE.Group();
     holder.position.y = 1.55;
     ped.add(holder);
@@ -464,7 +461,17 @@ export class LobbyScene {
     cam.lookAt(this.camLook);
     // shift the rendered view left while a side panel covers the right of the screen
     const panel = S.panel.value;
-    const shiftTarget = panel && panel !== 'settings' ? (window.innerWidth > 1100 ? 0.21 : 0) : 0;
+    // centre the station in the space left of the panel (panels have a fixed width)
+    if (panel && panel !== 'settings') {
+      this.panelProbeT = (this.panelProbeT || 0) - dt;
+      if (this.panelProbeT <= 0) {
+        this.panelProbeT = 0.25;
+        const el = document.querySelector('.panel.panel-right');
+        const W0 = window.innerWidth, left = el ? el.getBoundingClientRect().left : W0 * 0.58;
+        this.panelShift = left > W0 * 0.2 ? Math.min(0.36, Math.max(0, 0.5 - left / 2 / W0)) : 0;
+      }
+    } else this.panelProbeT = 0;
+    const shiftTarget = panel && panel !== 'settings' ? (this.panelShift ?? 0.21) : 0;
     this.viewShift = (this.viewShift || 0) + (shiftTarget - (this.viewShift || 0)) * (1 - Math.exp(-dt * 6));
     const W = window.innerWidth, H = window.innerHeight;
     if (Math.abs(this.viewShift) > 0.002) cam.setViewOffset(W, H, W * this.viewShift, 0, W, H);
