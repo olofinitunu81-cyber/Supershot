@@ -133,7 +133,7 @@ export class LobbyScene {
     const frame = new THREE.Mesh(new THREE.BoxGeometry(0.2, 4.2, 3.4), new THREE.MeshStandardMaterial({ color: '#2a2f42', metalness: 0.7, roughness: 0.35 }));
     frame.position.set(-23.6, 2.5, 0);
     sc.add(frame);
-    const mirror = new THREE.Mesh(new THREE.PlaneGeometry(3, 3.8), new THREE.MeshStandardMaterial({ color: '#46506a', metalness: 0.85, roughness: 0.16, envMapIntensity: 0.9 }));
+    const mirror = new THREE.Mesh(new THREE.PlaneGeometry(3, 3.8), new THREE.MeshStandardMaterial({ color: '#3a4258', metalness: 0.8, roughness: 0.34, envMapIntensity: 0.7 }));
     mirror.position.set(-23.48, 2.5, 0); mirror.rotation.y = Math.PI / 2;
     sc.add(mirror);
     this.showcase = new Avatar(S.profile.value ? S.profile.value.avatar : undefined, { shadows: q.shadows > 0 });
@@ -178,7 +178,7 @@ export class LobbyScene {
     const pglow = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.05, 32), new THREE.MeshBasicMaterial({ color: new THREE.Color('#ffd27a').multiplyScalar(2.5) }));
     pglow.position.y = 1.0;
     ped.add(pglow);
-    const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 2.2, 32, 1, true), new THREE.MeshBasicMaterial({ color: new THREE.Color('#ffd27a').multiplyScalar(0.4), transparent: true, opacity: 0.25, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+    const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 2.2, 32, 1, true), new THREE.MeshBasicMaterial({ color: new THREE.Color('#ffd27a').multiplyScalar(0.22), transparent: true, opacity: 0.14, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
     beam.position.y = 2.1;
     ped.add(beam);
     const holder = new THREE.Group();
