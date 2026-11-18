@@ -5,6 +5,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { getItem } from '../../../shared/items.js';
 import { DEFAULT_AVATAR } from '../../../shared/avatar.js';
 import { buildWeaponModel } from './weaponmodels.js';
+import { mergeStatic } from './merge.js';
 import { WEAPONS } from '../../../shared/weapons.js';
 
 const DIMS = {
@@ -259,6 +260,7 @@ export class Avatar {
   build() {
     // dispose old
     for (const c of [...this.root.children]) this.root.remove(c);
+    this.cape = null;
     const a = this.app;
     const outfit = getItem(a.outfit);
     const od = outfit && outfit.id !== 'outfit_none' ? outfit.data : null;
@@ -373,6 +375,9 @@ export class Avatar {
     this._buildHat(head, a, hw, hd, topY);
     this._buildFaceAcc(head, a, hw, hd);
     this._buildBack(torsoPivot, a, od);
+    // fewer draw calls: fuse the rigid parts of the head and torso (hair, hats, gear)
+    mergeStatic(head, { exclude: [headMesh, face] });
+    mergeStatic(torsoPivot, { exclude: [torso, aim, head, this.cape] });
     this.attachWeapon(this.weaponId, this.camos);
     this.root.traverse((o) => { if (o.isMesh) { o.castShadow = this.opts.shadows !== false; o.receiveShadow = false; } });
   }
@@ -619,7 +624,9 @@ export class Avatar {
       const off = model.userData.offhand;
       model.remove(off);
       const h2 = new THREE.Group(); h2.add(off); this.aim.add(h2); this.offhand = h2;
+      mergeStatic(off);
     }
+    mergeStatic(model);
     model.traverse((o) => { if (o.isMesh) o.castShadow = this.opts.shadows !== false; });
   }
 

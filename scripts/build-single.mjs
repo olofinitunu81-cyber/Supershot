@@ -18,13 +18,19 @@ const alias = {
   },
 };
 const t0 = Date.now();
+const common = {
+  bundle: true, target: ['es2022', 'chrome100', 'firefox100', 'safari16'], minify: true, legalComments: 'none',
+  define: { 'process.env.NODE_ENV': '"production"', 'process.env': '{}', 'process.argv': '[]' }, plugins: [alias], logLevel: 'error',
+};
+const wk = await esbuild.build({ ...common, entryPoints: [join(root, 'client/src/local/worker.js')], format: 'iife', write: false });
+const workerSrc = wk.outputFiles[0].text;
 const res = await esbuild.build({
   entryPoints: { app: join(root, 'client/src/local/main-local.js') },
   bundle: true, format: 'esm', write: false, outdir: out,
   target: ['es2022', 'chrome100', 'firefox100', 'safari16'],
   loader: { '.woff2': 'dataurl', '.woff': 'dataurl', '.png': 'dataurl', '.svg': 'text' },
   jsx: 'automatic', jsxImportSource: 'preact', minify: true, legalComments: 'none',
-  define: { 'process.env.NODE_ENV': '"production"', 'process.env': '{}', 'process.argv': '[]' },
+  define: { 'process.env.NODE_ENV': '"production"', 'process.env': '{}', 'process.argv': '[]', __WORKER_SRC__: JSON.stringify(workerSrc) },
   plugins: [alias], logLevel: 'warning',
 });
 const js = res.outputFiles.find((f) => f.path.endsWith('.js')).text.replace(/<\/script/gi, '<\\/script');
@@ -44,4 +50,4 @@ mkdirSync(out, { recursive: true });
 // full document for double-click play; fragment for hosting inside a page skeleton
 writeFileSync(join(out, 'supershot.html'), `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n${body}</body>\n</html>\n`);
 writeFileSync(join(out, 'page.html'), body);
-console.log(`single-file build in ${Date.now() - t0}ms → dist-single/supershot.html ${(js.length / 1024 / 1024).toFixed(2)} MB js + ${(css.length / 1024).toFixed(0)} KB css`);
+console.log(`single-file build in ${Date.now() - t0}ms → dist-single/supershot.html ${(js.length / 1024 / 1024).toFixed(2)} MB js (server worker ${(workerSrc.length / 1024).toFixed(0)} KB) + ${(css.length / 1024).toFixed(0)} KB css`);

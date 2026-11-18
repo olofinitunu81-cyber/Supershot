@@ -10,6 +10,7 @@ import { FXAAPass } from 'three/addons/postprocessing/FXAAPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { QUALITY_PRESETS } from '../settings.js';
 import { S } from '../state.js';
+import { TOUCH } from '../input.js';
 
 export class Engine {
   constructor(canvas) {
@@ -126,7 +127,7 @@ export class Engine {
   resize() {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
-    const dpr = Math.min(window.devicePixelRatio || 1, this.q.pixelRatio) * (this.renderScale || 1);
+    const dpr = Math.min(window.devicePixelRatio || 1, this.q.pixelRatio) * (this.renderScale || 1) * (this.dynScale ?? 1);
     this.renderer.setPixelRatio(Math.max(0.35, dpr));
     this.renderer.setSize(this.width, this.height, false);
     this.canvas.style.width = this.width + 'px';
@@ -243,10 +244,24 @@ export class Engine {
       this.fps = Math.round(this._fpsCount / this._fpsAcc);
       this.frameMs = (this._fpsAcc / this._fpsCount) * 1000;
       this._fpsAcc = 0; this._fpsCount = 0;
+      if (TOUCH) this._adapt();
     }
     if (this.onFrame) this.onFrame(dt, now);
   }
 }
+
+// Phones: lower the render resolution while the frame rate is below target, and raise it
+// again once there is headroom.
+Engine.prototype._adapt = function adapt() {
+  if (document.hidden || !this.scene) return;
+  const target = Math.min(60, this.fpsCap > 0 ? this.fpsCap : (this.refreshHz || 60));
+  let s = this.dynScale ?? 1;
+  if (this.fps < target * 0.7) { s -= 0.12; this._good = 0; }
+  else if (this.fps < target * 0.88) { s -= 0.06; this._good = 0; }
+  else if (this.fps >= target * 0.95 && (this._good = (this._good || 0) + 1) >= 4) { s += 0.05; this._good = 0; }
+  s = Math.max(0.5, Math.min(1, s));
+  if (Math.abs(s - (this.dynScale ?? 1)) > 0.001) { this.dynScale = s; this.resize(); }
+};
 
 export function qualitySettings() {
   return QUALITY_PRESETS[S.settings.value.quality] || QUALITY_PRESETS.high;

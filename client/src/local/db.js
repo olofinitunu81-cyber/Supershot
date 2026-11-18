@@ -5,8 +5,10 @@ const lower = (s) => String(s).toLowerCase();
 
 export class DB {
   constructor() {
+    // inside the worker the page hands over the saved data and stores what we send back
+    this.env = globalThis.__SUPERSHOT_DB__ || null;
     let d = null;
-    try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { d = null; }
+    try { d = JSON.parse((this.env ? this.env.init : localStorage.getItem(KEY)) || 'null'); } catch { d = null; }
     this.d = d && d.accounts ? d : { nextId: 1, accounts: [], sessions: [], friends: [] };
     const D = this.d;
     const acc = (id) => D.accounts.find((a) => a.id === id);
@@ -47,16 +49,18 @@ export class DB {
       insertMatch: { run: () => ({ changes: 1 }) },
       countAccounts: { get: () => ({ n: D.accounts.length }) },
     };
-    try { addEventListener('pagehide', () => this._flush()); } catch { /* no window */ }
+    if (!this.env) { try { addEventListener('pagehide', () => this._flush()); } catch { /* no window */ } }
   }
 
   _persist() {
     clearTimeout(this.saveTimer);
-    this.saveTimer = setTimeout(() => this._flush(), 400);
+    this.saveTimer = setTimeout(() => this._flush(), 250);
   }
 
   _flush() {
-    try { localStorage.setItem(KEY, JSON.stringify(this.d)); } catch { /* storage unavailable */ }
+    const json = JSON.stringify(this.d);
+    if (this.env) { this.env.save(json); return; }
+    try { localStorage.setItem(KEY, json); } catch { /* storage unavailable */ }
   }
 
   tx(fn) { return fn(); }

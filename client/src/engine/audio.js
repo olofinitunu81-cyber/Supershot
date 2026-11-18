@@ -285,7 +285,8 @@ class AudioEngine {
     this.voices = [];
     this.ready = false;
     this.vol = { master: 0.8, music: 0.45, sfx: 0.9, ui: 0.7, announcer: 0.9 };
-    this.hrtf = true;
+    // HRTF panning is costly on phones; plain stereo panning there
+    this.hrtf = !(typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0 && /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent));
     this.announcerVoice = true;
   }
 
