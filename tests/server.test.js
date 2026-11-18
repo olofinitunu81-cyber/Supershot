@@ -182,8 +182,12 @@ test('public matchmaking fills with bots and shots are broadcast', async () => {
   const match = server.matchmaker.matches.get(m1.match.id);
   // fast-forward through countdown and let bots fight
   match.phaseEnd = match.time;
-  await sleep(4000);
-  const shotsMsgs = p1.c.bins.filter((b) => new Uint8Array(b)[0] === MSG_SHOTS);
+  // bots need a moment to find each other; wait until gunfire shows up (or give up)
+  let shotsMsgs = [];
+  for (let i = 0; i < 60 && !shotsMsgs.length; i++) {
+    await sleep(250);
+    shotsMsgs = p1.c.bins.filter((b) => new Uint8Array(b)[0] === MSG_SHOTS);
+  }
   assert.ok(shotsMsgs.length > 0, 'remote shots broadcast');
   p1.c.close(); p2.c.close();
   for (let i = 0; i < 40 && server.matchmaker.matches.size; i++) await sleep(50);

@@ -22,10 +22,12 @@ export function randomBotLoadout(rng) {
   return { primary: p(PRIMARIES), secondary: p(SECONDARIES), melee: p(MELEES) };
 }
 
+// minErr: aim sway that never goes away (bots keep missing some shots); burst/pause: seconds of
+// trigger time and breathers; dmg: multiplier on damage dealt to human players
 const DIFF = {
-  easy: { react: 0.55, turn: 3.2, aimErr: 0.11, errDecay: 1.4, fireCone: 0.06, view: 75, headChance: 0.1, strafe: 0.5 },
-  normal: { react: 0.34, turn: 5.5, aimErr: 0.065, errDecay: 2.4, fireCone: 0.045, view: 95, headChance: 0.25, strafe: 0.8 },
-  hard: { react: 0.2, turn: 9, aimErr: 0.035, errDecay: 4, fireCone: 0.03, view: 110, headChance: 0.45, strafe: 1 },
+  easy: { react: 0.9, turn: 2.2, aimErr: 0.16, errDecay: 0.6, minErr: 0.075, fireCone: 0.05, view: 70, headChance: 0.03, strafe: 0.45, burst: [0.3, 0.6], pause: [0.7, 1.2], dmg: 0.5 },
+  normal: { react: 0.6, turn: 3.4, aimErr: 0.12, errDecay: 1.0, minErr: 0.05, fireCone: 0.04, view: 85, headChance: 0.08, strafe: 0.65, burst: [0.4, 0.8], pause: [0.45, 0.85], dmg: 0.7 },
+  hard: { react: 0.32, turn: 6.5, aimErr: 0.07, errDecay: 2.2, minErr: 0.024, fireCone: 0.032, view: 105, headChance: 0.3, strafe: 0.95, burst: [0.7, 1.3], pause: [0.2, 0.45], dmg: 1 },
 };
 
 export class BotBrain {
@@ -221,10 +223,11 @@ export class BotBrain {
       const a = anglesFromDir(ax - ex, ay - ey, az - ez);
       this.errYaw *= Math.exp(-this.d.errDecay * dt);
       this.errPitch *= Math.exp(-this.d.errDecay * dt);
-      // continuous tracking wobble
-      const wob = this.d.aimErr * 0.25;
-      lookYaw = a.yaw + this.errYaw + Math.sin(now * 3.1 + me.pid) * wob;
-      lookPitch = a.pitch + this.errPitch + Math.sin(now * 2.3 + me.pid * 2) * wob * 0.6;
+      // aim never settles perfectly: a sway that grows when the target is moving
+      const moving = Math.min(1, Math.hypot(t.sim.vx, t.sim.vz) / 6);
+      const wob = this.d.minErr * (0.7 + moving * 0.6);
+      lookYaw = a.yaw + this.errYaw + (Math.sin(now * 1.9 + me.pid) + Math.sin(now * 4.3 + me.pid * 1.7) * 0.5) * wob;
+      lookPitch = a.pitch + this.errPitch + (Math.sin(now * 2.3 + me.pid * 2) + Math.sin(now * 5.1 + me.pid) * 0.4) * wob * 0.55;
 
       // weapon choice
       if (cur.mag === 0 && s.slot === 0 && dist < 18 && s.slots[1].mag > 0) this.slot = 1;
@@ -254,7 +257,14 @@ export class BotBrain {
       const errAng = Math.hypot(wrapAngle(this.yaw - a.yaw), this.pitch - a.pitch);
       const angSize = Math.atan2(0.45, Math.max(1, dist));
       const reacted = now - this.targetSince > this.d.react;
-      if (reacted && errAng < this.d.fireCone + angSize) {
+      // fire in bursts with breathers instead of holding the trigger down
+      if (now >= (this.pauseEnd || 0)) {
+        const [b0, b1] = this.d.burst, [p0, p1] = this.d.pause;
+        this.burstEnd = now + b0 + this.rng() * (b1 - b0);
+        this.pauseEnd = this.burstEnd + p0 + this.rng() * (p1 - p0);
+      }
+      const gated = slotDef.kind === 'gun' && slotDef.fire !== 'charge' && slotDef.fire !== 'spin';
+      if (reacted && (!gated || now < this.burstEnd) && errAng < this.d.fireCone + angSize) {
         if (slotDef.kind === 'melee') {
           if (dist < slotDef.range + 0.3) inp.buttons |= BTN.FIRE;
         } else if (dist < 2.2 && this.rng() < 0.3) {

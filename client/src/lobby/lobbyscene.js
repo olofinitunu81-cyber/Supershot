@@ -345,6 +345,13 @@ export class LobbyScene {
     window.addEventListener('wheel', this.wh, { passive: true });
   }
 
+  /** Camera drag from the touch controls' look area. */
+  touchLook(dx, dy) {
+    if (this.focus) return;
+    this.camYaw -= dx * 0.006;
+    this.camPitch = Math.max(-0.9, Math.min(0.35, this.camPitch - dy * 0.0045));
+  }
+
   _key(type, code) {
     if (type !== 'keydown' || S.screen.value !== 'lobby') return;
     if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) return;

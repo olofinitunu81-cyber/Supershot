@@ -4,7 +4,8 @@ import { audio } from './engine/audio.js';
 import { LobbyScene } from './lobby/lobbyscene.js';
 import { MatchClient } from './game/matchclient.js';
 import { net } from './net.js';
-import { input } from './input.js';
+import { input, TOUCH } from './input.js';
+import { touch } from './touch.js';
 import { S, toast, pushChat } from './state.js';
 import { getItem } from '../../shared/items.js';
 import { WEAPONS } from '../../shared/weapons.js';
@@ -30,6 +31,7 @@ class App {
     this.engine = new Engine(canvas);
     this.engine.applySettings(S.settings.value);
     input.attach(canvas);
+    touch.init(this);
     S.loading.value = { progress: 0.05, text: 'CALIBRATING DISPLAY' };
     await nextFrame();
     await this.engine.measureRefresh();
@@ -185,6 +187,7 @@ class App {
       return;
     }
     S.screen.value = 'match';
+    if (TOUCH) input.lock();
     S.paused.value = !input.locked;
     audio.play('stinger', { bus: 'announcer', jitter: false });
     if (info.phase === 'countdown') audio.announce('Get ready', { stinger: false });

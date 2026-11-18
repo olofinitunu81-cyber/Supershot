@@ -17,6 +17,10 @@ import { app } from './app.js';
 import { S } from './state.js';
 import { input } from './input.js';
 import { net } from './net.js';
+import { fitUI } from './fit.js';
+
+fitUI();
+window.addEventListener('resize', fitUI);
 
 function supportsWebGL2() {
   try { return !!document.createElement('canvas').getContext('webgl2'); } catch { return false; }

@@ -1,5 +1,10 @@
 // Keyboard / mouse input with rebindable actions and raw pointer lock.
+// On touch devices the on-screen controls (touch.js) feed the same state.
 import { S } from './state.js';
+
+export const TOUCH = typeof window !== 'undefined' && (navigator.maxTouchPoints > 0 || 'ontouchstart' in window)
+  && window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+const fakeEvent = { preventDefault() {}, stopPropagation() {} };
 
 class Input {
   constructor() {
@@ -65,7 +70,30 @@ class Input {
     return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
   }
 
+  _setLocked(v) {
+    if (this.locked === v) return;
+    this.locked = v;
+    S.pointerLocked.value = v;
+    if (!v) this.down.clear();
+    for (const l of this.listeners) l('lock', v);
+  }
+
+  /** Press / release an input code from the on-screen controls. */
+  press(code) {
+    if (!code) return;
+    if (!this.down.has(code)) this.pressedQ.add(code);
+    this.down.add(code);
+    for (const l of this.listeners) l(code.startsWith('Mouse') ? 'mousedown' : 'keydown', code, fakeEvent);
+  }
+
+  release(code) {
+    if (!code || !this.down.has(code)) return;
+    this.down.delete(code);
+    for (const l of this.listeners) l(code.startsWith('Mouse') ? 'mouseup' : 'keyup', code, fakeEvent);
+  }
+
   async lock() {
+    if (TOUCH) { this._setLocked(true); return; }
     if (!this.target || this.locked) return;
     try {
       await this.target.requestPointerLock({ unadjustedMovement: S.settings.value.rawInput });
@@ -75,6 +103,7 @@ class Input {
   }
 
   unlock() {
+    if (TOUCH) { this._setLocked(false); return; }
     if (document.pointerLockElement) document.exitPointerLock();
   }
 

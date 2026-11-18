@@ -81,6 +81,7 @@ function detectDefaults() {
   const cores = navigator.hardwareConcurrency || 8;
   const mobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
   if (mobile || mem <= 4 || cores <= 4) s.quality = 'medium';
+  if (mobile && navigator.maxTouchPoints > 0) { s.quality = 'low'; s.fpsCap = 60; }
   return s;
 }
 

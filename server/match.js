@@ -37,7 +37,7 @@ export class Match {
       scoreLimit: opts.scoreLimit || this.mode.scoreLimit,
       maxPlayers: opts.maxPlayers || this.mode.maxPlayers,
       bots: opts.bots ?? null, // null = auto-fill to maxPlayers
-      botDifficulty: opts.botDifficulty || 'normal',
+      botDifficulty: opts.botDifficulty || 'easy', // quick play: forgiving bots
     };
     this.players = new Map();
     this.nextPid = 1;
@@ -608,6 +608,8 @@ export class Match {
 
   _damage(victim, attacker, amount, def, head, fromX, fromZ, kind) {
     if (!victim.alive || this.phase !== 'live') return;
+    // bots hit human players softer; how much depends on their skill setting
+    if (attacker && attacker !== victim && attacker.bot && !victim.bot && attacker.brain) amount *= attacker.brain.d.dmg ?? 1;
     if (this.time < victim.protectUntil) return;
     if (attacker && attacker !== victim && !this.canDamage(attacker, victim)) return;
     amount = Math.max(1, Math.round(amount));

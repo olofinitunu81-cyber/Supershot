@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'preact/hooks';
 import { S } from '../../state.js';
 import { app } from '../../app.js';
-import { input } from '../../input.js';
+import { input, TOUCH } from '../../input.js';
 import { Btn, Credits, Icon, Logo } from '../components.jsx';
 import { SettingsPanel } from './settings.jsx';
 import { MODES, TEAM_NAMES, MATCH } from '../../../../shared/config.js';
@@ -22,7 +22,7 @@ function Pause() {
         <Logo size={46} />
         <div class="pause-meta"><b>{MODES[m.mode].name}</b><span>{map.name}{m.private ? ` · PRIVATE ${m.code}` : ''}</span></div>
         <button class="resume" onClick={() => { input.lock(); }}>
-          <Icon name="play" size={26} /><span>CLICK TO PLAY</span>
+          <Icon name="play" size={26} /><span>{TOUCH ? 'TAP TO PLAY' : 'CLICK TO PLAY'}</span>
         </button>
         <div class="pause-actions">
           <Btn variant="secondary" icon="gear" onClick={() => setSettings(true)}>SETTINGS</Btn>
