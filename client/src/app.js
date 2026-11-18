@@ -168,7 +168,14 @@ class App {
     S.screen.value = 'loading';
     S.loading.value = { progress: 0.3, text: 'DEPLOYING' };
     audio.stopMusic(0.6);
+    // roster changes that arrive while the map loads must not be lost
+    const offs = [
+      net.on('pjoin', (m) => { if (!info.players.some((p) => p.pid === m.p.pid)) info.players.push(m.p); }),
+      net.on('pleave', (m) => { info.players = info.players.filter((p) => p.pid !== m.pid); }),
+      net.on('scores', (m) => { info.teamScores = m.teams; info.scores = m.rows; }),
+    ];
     await nextFrame();
+    offs.forEach((off) => off());
     try {
       this.match = new MatchClient(this, info);
     } catch (e) {

@@ -55,7 +55,6 @@ function redDot(g, y, z, lensColor = '#ff2a55') {
   box(g, 0.006, 0.034, 0.034, fm, -0.016, y, z, { r: 0.002 });
   box(g, 0.006, 0.034, 0.034, fm, 0.016, y, z, { r: 0.002 });
   box(g, 0.038, 0.005, 0.034, fm, 0, y - 0.016, z, { r: 0.002 });
-  part(g, B(0.026, 0.028, 0.002, 0), mat('reflexglass' + lensColor, () => new THREE.MeshBasicMaterial({ color: new THREE.Color(lensColor).multiplyScalar(0.25), transparent: true, opacity: 0.18, depthWrite: false })), 0, y, z - 0.012);
   part(g, geo('reddotdot', () => new THREE.CircleGeometry(0.0016, 12).rotateY(Math.PI)), glowM(lensColor, 6), 0, y, z - 0.013);
   return y;
 }

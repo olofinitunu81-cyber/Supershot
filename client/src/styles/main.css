@@ -598,7 +598,7 @@ kbd { display: inline-block; min-width: 22px; padding: 1px 6px; border: 1px soli
 .sb-team td.rk { color: var(--muted); }
 .hud-hint { position: absolute; left: 50%; bottom: 180px; transform: translateX(-50%); font: 700 14px var(--f-ui); letter-spacing: .2em; opacity: 0; }
 .hud-hint.show { opacity: 1; }
-.hud.ended .hud-center, .hud.ended .hud-cross, .hud.ended .hud-bottom-left, .hud.ended .hud-bottom-right, .hud.ended .hud-death { display: none; }
+.hud.ended .hud-center, .hud.ended .hud-cross, .hud.ended .hud-bottom-left, .hud.ended .hud-bottom-right, .hud.ended .hud-death, .hud.ended .hud-top, .hud.ended .hud-killfeed, .hud.ended .hud-scope, .hud.ended .hud-countdown { display: none; }
 
 /* ───────── pause & end screens ───────── */
 .match-ui > * { pointer-events: auto; }
@@ -660,3 +660,4 @@ kbd { display: inline-block; min-width: 22px; padding: 1px 6px; border: 1px soli
   .pb-label { font-size: 46px; }
   .end-title h1 { font-size: 60px; }
 }
+.end-actions > .muted { min-width: 270px; text-align: right; font-variant-numeric: tabular-nums; }
