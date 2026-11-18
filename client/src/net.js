@@ -21,7 +21,8 @@ class Net {
 
   connect() {
     this.manualClose = false;
-    const ws = new WebSocket(this.url());
+    const local = typeof window !== 'undefined' && window.__SUPERSHOT_LOCAL__;
+    const ws = local ? local.connect() : new WebSocket(this.url());
     ws.binaryType = 'arraybuffer';
     this.ws = ws;
     ws.onopen = () => {
